@@ -1,0 +1,131 @@
+{% extends "base.html" %} {% block title %}My Wishlist - Parshva Jewellers{%
+endblock %} {% block content %}
+<section class="py-16 px-4 min-h-[80vh]">
+  <div class="container mx-auto max-w-5xl">
+    <h1 class="text-4xl brand-font text-center mb-2 dark:text-white">
+      My Wishlist
+    </h1>
+    <p class="text-center text-gray-500 dark:text-gray-400 mb-10">
+      {% if items %}{{ items|length }} item{{ 's' if items|length != 1 }}
+      saved{% else %}Your wishlist is empty{% endif %}
+    </p>
+
+    {% if items %}
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    >
+      {% for item in items %}
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700"
+        id="wish-{{ item.id }}"
+      >
+        <div class="h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+          <img
+            src="{{ url_for('static', filename=item.product_image) }}"
+            alt="{{ item.product_name }}"
+            class="w-full h-full object-cover hover:scale-105 transition duration-300"
+          />
+        </div>
+        <div class="p-4">
+          <h3
+            class="font-semibold text-gray-900 dark:text-white brand-font mb-1"
+          >
+            {{ item.product_name }}
+          </h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 capitalize mb-3">
+            {{ item.product_category }}
+          </p>
+          <div class="flex gap-2">
+            <button
+              onclick="moveToCart('{{ item.product_image }}', '{{ item.product_name }}', '{{ item.product_category }}', {{ item.id }})"
+              class="flex-1 bg-yellow-700 hover:bg-yellow-800 text-white py-2 rounded-lg text-sm font-semibold transition"
+            >
+              Add to Cart
+            </button>
+            <button
+              onclick="removeWishlist({{ item.id }})"
+              class="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition"
+              title="Remove"
+            >
+              <svg
+                class="w-4 h-4 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+      <svg
+        class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        ></path>
+      </svg>
+      <p class="text-gray-400 dark:text-gray-500 text-lg mb-4">
+        No items in your wishlist yet
+      </p>
+      <a
+        href="{{ url_for('home') }}"
+        class="inline-block bg-yellow-700 hover:bg-yellow-800 text-white px-8 py-3 rounded-lg font-semibold transition"
+        >Start Shopping</a
+      >
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  function removeWishlist(id) {
+    fetch("/api/wishlist/remove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: id }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          document.getElementById("wish-" + id).remove();
+          updateBadges();
+        }
+      });
+  }
+
+  function moveToCart(image, name, category, wishId) {
+    fetch("/api/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product_image: image,
+        product_name: name,
+        product_category: category,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          removeWishlist(wishId);
+        }
+      });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel - Parshva Jewellers{% endblock %}
+{% block content %}
+
+<section class="py-10 px-4 min-h-[85vh]">
+  <div class="container mx-auto max-w-7xl">
+    
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl brand-font dark:text-white">Admin Panel</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ products|length }} products</p>
+      </div>
+      <button onclick="document.getElementById('add-modal').classList.remove('hidden')"
+              class="bg-yellow-700 hover:bg-yellow-800 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">
+        + Add Product
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button onclick="filterProducts('all')" class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-yellow-700 text-white">All</button>
+      {% for cat in categories %}
+      <button onclick="filterProducts('{{ cat }}')" class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-yellow-100 dark:hover:bg-yellow-900 transition">{{ cat|title }}</button>
+      {% endfor %}
+      <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
+      <button onclick="filterByMaterial('gold')" class="px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300">Gold</button>
+      <button onclick="filterByMaterial('silver')" class="px-4 py-2 rounded-full text-sm font-semibold bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300">Silver</button>
+      <button onclick="filterByMaterial('diamond')" class="px-4 py-2 rounded-full text-sm font-semibold bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300">Diamond</button>
+      <button onclick="filterByMaterial('antique')" class="px-4 py-2 rounded-full text-sm font-semibold bg-orange-50 dark:bg-orange-900 text-orange-700 dark:text-orange-300">Antique</button>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="product-grid">
+      {% for p in products %}
+      <div class="product-card bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 overflow-hidden"
+           data-category="{{ p.category }}" data-material="{{ p.material }}" data-id="{{ p.id }}">
+        <div class="h-48 bg-gray-100 dark:bg-gray-700 relative">
+          <img src="{{ url_for('static', filename=p.image_path) }}" alt="{{ p.name }}"
+               class="w-full h-full object-cover">
+          <span class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase
+            {% if p.material == 'gold' %}bg-yellow-200 text-yellow-800
+            {% elif p.material == 'silver' %}bg-gray-200 text-gray-700
+            {% elif p.material == 'diamond' %}bg-blue-100 text-blue-700
+            {% else %}bg-orange-100 text-orange-700{% endif %}">{{ p.material }}</span>
+          {% if not p.is_active %}
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold bg-red-200 text-red-700">HIDDEN</span>
+          {% endif %}
+        </div>
+        <div class="p-3">
+          <p class="text-xs text-gray-400 dark:text-gray-500 capitalize mb-1">{{ p.category }}</p>
+          <input type="text" value="{{ p.name }}" 
+                 class="w-full font-semibold text-sm text-gray-900 dark:text-white bg-transparent border-b border-transparent hover:border-gray-300 dark:hover:border-gray-600 focus:border-yellow-600 outline-none py-1 transition"
+                 onchange="updateField({{ p.id }}, 'name', this.value)">
+          <div class="flex items-center gap-1 mt-2">
+            <span class="text-yellow-700 dark:text-yellow-500 font-bold">₹</span>
+            <input type="number" value="{{ p.price|int if p.price else 0 }}" 
+                   class="w-24 font-bold text-yellow-700 dark:text-yellow-500 bg-transparent border-b border-transparent hover:border-gray-300 dark:hover:border-gray-600 focus:border-yellow-600 outline-none py-1 transition text-sm"
+                   onchange="updateField({{ p.id }}, 'price', this.value)">
+          </div>
+          <div class="flex gap-2 mt-2">
+            <select onchange="updateField({{ p.id }}, 'material', this.value)"
+                    class="text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded px-2 py-1 text-gray-700 dark:text-gray-300 flex-1">
+              <option value="gold" {{ 'selected' if p.material == 'gold' }}>Gold</option>
+              <option value="silver" {{ 'selected' if p.material == 'silver' }}>Silver</option>
+              <option value="diamond" {{ 'selected' if p.material == 'diamond' }}>Diamond</option>
+              <option value="antique" {{ 'selected' if p.material == 'antique' }}>Antique</option>
+            </select>
+            <input type="text" value="{{ p.weight or '' }}" placeholder="Weight"
+                   class="text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded px-2 py-1 text-gray-700 dark:text-gray-300 w-20"
+                   onchange="updateField({{ p.id }}, 'weight', this.value)">
+          </div>
+          <div class="flex justify-between items-center mt-3">
+            <label class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
+              <input type="checkbox" {{ 'checked' if p.is_active }} 
+                     onchange="updateField({{ p.id }}, 'is_active', this.checked)"
+                     class="rounded border-gray-300">
+              Visible
+            </label>
+            <button onclick="deleteProduct({{ p.id }})" class="text-xs text-red-400 hover:text-red-600 transition">Delete</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Add Product Modal -->
+<div id="add-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+    <h2 class="text-xl font-bold dark:text-white mb-4">Add New Product</h2>
+    <form id="add-form" enctype="multipart/form-data" class="space-y-3">
+      <input name="name" placeholder="Product name" class="w-full px-3 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white outline-none focus:border-yellow-600">
+      <select name="category" class="w-full px-3 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+        {% for cat in categories %}
+        <option value="{{ cat }}">{{ cat|title }}</option>
+        {% endfor %}
+      </select>
+      <select name="material" class="w-full px-3 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+        <option value="gold">Gold</option>
+        <option value="silver">Silver</option>
+        <option value="diamond">Diamond</option>
+        <option value="antique">Antique</option>
+      </select>
+      <input name="price" type="number" placeholder="Price (₹)" class="w-full px-3 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white outline-none focus:border-yellow-600">
+      <input name="weight" placeholder="Weight (e.g. 12.5g)" class="w-full px-3 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white outline-none focus:border-yellow-600">
+      <input name="image" type="file" accept="image/*" required class="w-full text-sm text-gray-500 dark:text-gray-400">
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="flex-1 bg-yellow-700 hover:bg-yellow-800 text-white py-2 rounded-lg font-semibold transition">Add Product</button>
+        <button type="button" onclick="document.getElementById('add-modal').classList.add('hidden')"
+                class="px-4 py-2 border dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
+      </div>
+    </form>
+    <p id="add-msg" class="text-sm mt-2 text-center hidden"></p>
+  </div>
+</div>
+
+<script>
+function updateField(id, field, value) {
+    var body = {};
+    body[field] = value;
+    fetch('/api/admin/product/' + id, {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) showToast('Updated!', 'success');
+    });
+}
+
+function deleteProduct(id) {
+    if (!confirm('Delete this product?')) return;
+    fetch('/api/admin/product/' + id + '/delete', {method: 'POST'})
+    .then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+            var el = document.querySelector('[data-id="' + id + '"]');
+            if (el) el.remove();
+            showToast('Deleted', 'info');
+        }
+    });
+}
+
+function filterProducts(cat) {
+    document.querySelectorAll('.product-card').forEach(function(card) {
+        card.style.display = (cat === 'all' || card.dataset.category === cat) ? '' : 'none';
+    });
+}
+
+function filterByMaterial(mat) {
+    document.querySelectorAll('.product-card').forEach(function(card) {
+        card.style.display = (card.dataset.material === mat) ? '' : 'none';
+    });
+}
+
+document.getElementById('add-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    fetch('/api/admin/product/new', {method: 'POST', body: formData})
+    .then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+            showToast('Product added!', 'success');
+            setTimeout(function() { location.reload(); }, 1000);
+        } else {
+            var msg = document.getElementById('add-msg');
+            msg.textContent = data.message;
+            msg.className = 'text-sm mt-2 text-center text-red-600';
+        }
+    });
+});
+</script>
+{% endblock %}

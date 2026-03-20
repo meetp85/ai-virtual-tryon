@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block title %}{{ category|title }} - Parshva
+Jewellers{% endblock %} {% block content %}
+
+<!-- Category Header -->
+<section class="bg-gradient-to-r from-yellow-50 to-yellow-100 py-16">
+  <div class="container mx-auto px-6 text-center">
+    <h1 class="text-5xl brand-font text-gray-900 mb-4">{{ category|title }}</h1>
+    <p class="text-gray-600 max-w-2xl mx-auto">
+      Discover our exquisite collection of handcrafted jewelry
+    </p>
+  </div>
+</section>
+
+<!-- Jewelry Grid -->
+<section class="py-20 bg-white">
+  <div class="container mx-auto px-6">
+    {% if images %}
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+    >
+      {% for image in images %}
+      <div
+        class="group bg-white rounded-lg shadow-md hover:shadow-2xl transition duration-300 overflow-hidden"
+      >
+        <!-- Image -->
+        <div class="relative h-80 bg-gray-100 overflow-hidden">
+          <img
+            src="{{ url_for('static', filename=image) }}"
+            alt="Jewelry"
+            class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+          />
+
+          <!-- Virtual Try-On Overlay Button -->
+          <a
+            href="{{ url_for('tryon', category=image.split('/')[0], filename=image.split('/')[1]) }}"
+            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center transition duration-300"
+          >
+            <span
+              class="bg-yellow-700 text-white px-6 py-3 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition duration-300 font-semibold uppercase text-sm tracking-wider"
+            >
+              Virtual Try-On
+            </span>
+          </a>
+        </div>
+
+        <!-- Product Info -->
+        <div class="p-5">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2 brand-font">
+            {{ image.split('/')[1].replace('.jpg', '').replace('.png',
+            '').replace('_', ' ')|title }}
+          </h3>
+          <p class="text-yellow-700 font-bold text-xl mb-4">₹ XX,XXX</p>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2">
+            <button
+              class="flex-1 bg-yellow-700 hover:bg-yellow-800 text-white py-2 px-4 rounded transition font-semibold text-sm"
+            >
+              Add to Cart
+            </button>
+            <button
+              class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Try-On Link -->
+          <a
+            href="{{ url_for('tryon', category=image.split('/')[0], filename=image.split('/')[1]) }}"
+            class="block mt-3 text-center text-yellow-700 hover:text-yellow-800 text-sm font-semibold"
+          >
+            ✨ Try with AR Camera
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+      <p class="text-gray-500 text-xl">No items found in this category.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

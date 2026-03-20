@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block title %}Jhumka Earrings - Parshva Jewellers{%
+endblock %} {% block content %}
+<section
+  class="bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-gray-800 dark:to-gray-900 py-16"
+>
+  <div class="container mx-auto px-6 text-center">
+    <h1 class="text-5xl brand-font text-gray-900 dark:text-white mb-4">
+      Jhumka Earrings
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Elegant traditional earrings
+    </p>
+  </div>
+</section>
+<section class="py-20 bg-white dark:bg-gray-900">
+  <div class="container mx-auto px-6">
+    {% if images %}
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+    >
+      {% for image in images %} {% set img_name =
+      image.split('/')[1].replace('.jpg', '').replace('.png',
+      '').replace('.jpeg', '').replace('.webp', '').replace('_', ' ')|title %}
+      {% set img_cat = image.split('/')[0] %}
+      <div
+        class="group bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-2xl transition duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
+      >
+        <div class="relative h-80 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+          <img
+            src="{{ url_for('static', filename=image) }}"
+            alt="{{ img_name }}"
+            class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+          />
+          <a
+            href="{{ url_for('tryon', category=img_cat, filename=image.split('/')[1]) }}"
+            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center transition duration-300"
+          >
+            <span
+              class="bg-yellow-700 text-white px-6 py-3 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition duration-300 font-semibold uppercase text-sm tracking-wider"
+            >
+              Virtual Try-On
+            </span>
+          </a>
+        </div>
+        <div class="p-5">
+          <h3
+            class="text-lg font-semibold text-gray-900 dark:text-white mb-2 brand-font"
+          >
+            {{ img_name }}
+          </h3>
+          <p
+            class="text-yellow-700 dark:text-yellow-500 font-bold text-xl mb-4"
+          >
+            ₹ XX,XXX
+          </p>
+          <div class="flex gap-2">
+            <button
+              onclick="addToCart('{{ image }}', '{{ img_name }}', '{{ img_cat }}')"
+              class="flex-1 bg-yellow-700 hover:bg-yellow-800 text-white py-2 px-4 rounded transition font-semibold text-sm"
+            >
+              Add to Cart
+            </button>
+            <button
+              onclick="toggleWishlist(this, '{{ image }}', '{{ img_name }}', '{{ img_cat }}')"
+              class="text-gray-400 dark:text-gray-500 hover:text-red-500 p-2 rounded transition"
+              title="Add to Wishlist"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <a
+            href="{{ url_for('tryon', category=img_cat, filename=image.split('/')[1]) }}"
+            class="block mt-3 text-center text-yellow-700 dark:text-yellow-500 hover:text-yellow-800 text-sm font-semibold"
+            >✨ Try with AR Camera</a
+          >
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+      <p class="text-gray-500 dark:text-gray-400 text-xl">No items found.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

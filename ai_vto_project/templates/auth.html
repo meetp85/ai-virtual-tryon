@@ -1,0 +1,604 @@
+{% extends "base.html" %} {% block title %}Sign In - Parshva Jewellers{%
+endblock %} {% block content %}
+<section
+  class="min-h-[85vh] flex items-center justify-center py-16 px-4 bg-gradient-to-br from-yellow-50 via-white to-yellow-50"
+>
+  <div class="w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl brand-font text-gray-900">Parshva Jewellers</h1>
+      <p class="text-gray-500 mt-2">Welcome back to timeless elegance</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div
+      class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100"
+    >
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-100">
+        <button
+          id="tab-signin"
+          onclick="switchTab('signin')"
+          class="flex-1 py-4 text-sm font-semibold tracking-wide uppercase transition-all duration-300 text-yellow-700 border-b-2 border-yellow-700"
+        >
+          Sign In
+        </button>
+        <button
+          id="tab-signup"
+          onclick="switchTab('signup')"
+          class="flex-1 py-4 text-sm font-semibold tracking-wide uppercase transition-all duration-300 text-gray-400 border-b-2 border-transparent hover:text-gray-600"
+        >
+          Create Account
+        </button>
+      </div>
+
+      <div class="p-8">
+        <!-- ═══ SIGN IN FORM ═══ -->
+        <div id="form-signin">
+          <!-- Step 1: Phone -->
+          <div id="signin-step1">
+            <p class="text-gray-600 text-sm mb-6">
+              Enter your phone number to receive a verification code.
+            </p>
+
+            <div class="mb-5">
+              <label
+                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >Phone Number</label
+              >
+              <div
+                class="flex border border-gray-200 rounded-lg overflow-hidden focus-within:border-yellow-600 focus-within:ring-1 focus-within:ring-yellow-600 transition"
+              >
+                <span
+                  class="bg-gray-50 px-3 flex items-center text-gray-500 text-sm border-r border-gray-200"
+                  >+91</span
+                >
+                <input
+                  id="signin-phone"
+                  type="tel"
+                  maxlength="10"
+                  placeholder="Enter 10-digit number"
+                  class="flex-1 px-4 py-3 outline-none text-gray-800 placeholder-gray-300"
+                />
+              </div>
+            </div>
+
+            <button
+              onclick="handleSignIn()"
+              id="signin-btn"
+              class="w-full bg-yellow-700 hover:bg-yellow-800 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              Send OTP
+            </button>
+          </div>
+
+          <!-- Step 2: OTP -->
+          <div id="signin-step2" style="display: none">
+            <p class="text-gray-600 text-sm mb-2">We sent a code to</p>
+            <p
+              class="text-gray-900 font-semibold mb-6"
+              id="signin-phone-display"
+            ></p>
+
+            <div class="mb-5">
+              <label
+                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >Verification Code</label
+              >
+              <div class="flex gap-2 justify-center" id="signin-otp-inputs">
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="0"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="1"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="2"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="3"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="4"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="5"
+                />
+              </div>
+            </div>
+
+            <button
+              onclick="verifyOTP('login')"
+              id="signin-verify-btn"
+              class="w-full bg-yellow-700 hover:bg-yellow-800 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              Verify & Sign In
+            </button>
+
+            <div class="flex justify-between items-center mt-4">
+              <button
+                onclick="switchToStep('signin', 1)"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                ← Change number
+              </button>
+              <button
+                onclick="resendOTP('login')"
+                id="signin-resend"
+                class="text-sm text-yellow-700 hover:text-yellow-800 font-semibold"
+              >
+                Resend OTP
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SIGN UP FORM ═══ -->
+        <div id="form-signup" style="display: none">
+          <!-- Step 1: Details -->
+          <div id="signup-step1">
+            <p class="text-gray-600 text-sm mb-6">
+              Create your account to start shopping.
+            </p>
+
+            <div class="mb-4">
+              <label
+                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >Full Name</label
+              >
+              <input
+                id="signup-name"
+                type="text"
+                placeholder="Enter your name"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg outline-none focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 transition text-gray-800 placeholder-gray-300"
+              />
+            </div>
+
+            <div class="mb-4">
+              <label
+                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >Phone Number</label
+              >
+              <div
+                class="flex border border-gray-200 rounded-lg overflow-hidden focus-within:border-yellow-600 focus-within:ring-1 focus-within:ring-yellow-600 transition"
+              >
+                <span
+                  class="bg-gray-50 px-3 flex items-center text-gray-500 text-sm border-r border-gray-200"
+                  >+91</span
+                >
+                <input
+                  id="signup-phone"
+                  type="tel"
+                  maxlength="10"
+                  placeholder="Enter 10-digit number"
+                  class="flex-1 px-4 py-3 outline-none text-gray-800 placeholder-gray-300"
+                />
+              </div>
+            </div>
+
+            <div class="mb-5">
+              <label
+                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >Email <span class="text-gray-300">(optional)</span></label
+              >
+              <input
+                id="signup-email"
+                type="email"
+                placeholder="your@email.com"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg outline-none focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 transition text-gray-800 placeholder-gray-300"
+              />
+            </div>
+
+            <button
+              onclick="handleSignUp()"
+              id="signup-btn"
+              class="w-full bg-yellow-700 hover:bg-yellow-800 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              Send Verification Code
+            </button>
+          </div>
+
+          <!-- Step 2: OTP -->
+          <div id="signup-step2" style="display: none">
+            <p class="text-gray-600 text-sm mb-2">We sent a code to</p>
+            <p
+              class="text-gray-900 font-semibold mb-6"
+              id="signup-phone-display"
+            ></p>
+
+            <div class="mb-5">
+              <label
+                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >Verification Code</label
+              >
+              <div class="flex gap-2 justify-center" id="signup-otp-inputs">
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="0"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="1"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="2"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="3"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="4"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="otp-input w-12 h-14 text-center text-xl font-bold border border-gray-200 rounded-lg focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 outline-none transition"
+                  data-index="5"
+                />
+              </div>
+            </div>
+
+            <button
+              onclick="verifyOTP('signup')"
+              id="signup-verify-btn"
+              class="w-full bg-yellow-700 hover:bg-yellow-800 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              Verify & Create Account
+            </button>
+
+            <div class="flex justify-between items-center mt-4">
+              <button
+                onclick="switchToStep('signup', 1)"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                ← Change number
+              </button>
+              <button
+                onclick="resendOTP('signup')"
+                id="signup-resend"
+                class="text-sm text-yellow-700 hover:text-yellow-800 font-semibold"
+              >
+                Resend OTP
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="auth-message" class="mt-4 text-center text-sm hidden"></div>
+
+        <!-- Dev OTP Display (remove in production) -->
+        <div id="dev-otp" class="mt-3 text-center text-xs text-gray-400 hidden">
+          Dev OTP:
+          <span
+            id="dev-otp-code"
+            class="font-mono font-bold text-yellow-700"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer text -->
+    <p class="text-center text-xs text-gray-400 mt-6">
+      By continuing, you agree to our Terms of Service and Privacy Policy.
+    </p>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var currentPhone = "";
+
+    // ── TAB SWITCHING ──
+    window.switchTab = function (tab) {
+      var signinForm = document.getElementById("form-signin");
+      var signupForm = document.getElementById("form-signup");
+      var tabSignin = document.getElementById("tab-signin");
+      var tabSignup = document.getElementById("tab-signup");
+
+      if (tab === "signin") {
+        signinForm.style.display = "block";
+        signupForm.style.display = "none";
+        tabSignin.className =
+          "flex-1 py-4 text-sm font-semibold tracking-wide uppercase transition-all duration-300 text-yellow-700 border-b-2 border-yellow-700";
+        tabSignup.className =
+          "flex-1 py-4 text-sm font-semibold tracking-wide uppercase transition-all duration-300 text-gray-400 border-b-2 border-transparent hover:text-gray-600";
+      } else {
+        signinForm.style.display = "none";
+        signupForm.style.display = "block";
+        tabSignup.className =
+          "flex-1 py-4 text-sm font-semibold tracking-wide uppercase transition-all duration-300 text-yellow-700 border-b-2 border-yellow-700";
+        tabSignin.className =
+          "flex-1 py-4 text-sm font-semibold tracking-wide uppercase transition-all duration-300 text-gray-400 border-b-2 border-transparent hover:text-gray-600";
+      }
+      hideMessage();
+    };
+
+    // ── STEP SWITCHING ──
+    window.switchToStep = function (form, step) {
+      document.getElementById(form + "-step1").style.display =
+        step === 1 ? "block" : "none";
+      document.getElementById(form + "-step2").style.display =
+        step === 2 ? "block" : "none";
+      hideMessage();
+    };
+
+    // ── SIGN IN ──
+    window.handleSignIn = function () {
+      var phone = document.getElementById("signin-phone").value.trim();
+      if (phone.length !== 10 || isNaN(phone)) {
+        showMessage("Please enter a valid 10-digit phone number.", "error");
+        return;
+      }
+
+      currentPhone = phone;
+      setLoading("signin-btn", true);
+
+      fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone }),
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (data) {
+          setLoading("signin-btn", false);
+          if (data.success) {
+            document.getElementById("signin-phone-display").textContent =
+              "+91 " + phone;
+            switchToStep("signin", 2);
+            focusFirstOTP("signin-otp-inputs");
+            showMessage(data.message, "success");
+            // Show dev OTP
+            if (data.dev_otp) showDevOTP(data.dev_otp);
+          } else {
+            showMessage(data.message, "error");
+          }
+        })
+        .catch(function () {
+          setLoading("signin-btn", false);
+          showMessage("Network error. Please try again.", "error");
+        });
+    };
+
+    // ── SIGN UP ──
+    window.handleSignUp = function () {
+      var name = document.getElementById("signup-name").value.trim();
+      var phone = document.getElementById("signup-phone").value.trim();
+      var email = document.getElementById("signup-email").value.trim();
+
+      if (name.length < 2) {
+        showMessage("Please enter your full name.", "error");
+        return;
+      }
+      if (phone.length !== 10 || isNaN(phone)) {
+        showMessage("Please enter a valid 10-digit phone number.", "error");
+        return;
+      }
+
+      currentPhone = phone;
+      setLoading("signup-btn", true);
+
+      fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: name,
+          phone: phone,
+          email: email || null,
+        }),
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (data) {
+          setLoading("signup-btn", false);
+          if (data.success) {
+            document.getElementById("signup-phone-display").textContent =
+              "+91 " + phone;
+            switchToStep("signup", 2);
+            focusFirstOTP("signup-otp-inputs");
+            showMessage(data.message, "success");
+            if (data.dev_otp) showDevOTP(data.dev_otp);
+          } else {
+            showMessage(data.message, "error");
+          }
+        })
+        .catch(function () {
+          setLoading("signup-btn", false);
+          showMessage("Network error. Please try again.", "error");
+        });
+    };
+
+    // ── VERIFY OTP ──
+    window.verifyOTP = function (purpose) {
+      var containerId =
+        purpose === "login" ? "signin-otp-inputs" : "signup-otp-inputs";
+      var btnId =
+        purpose === "login" ? "signin-verify-btn" : "signup-verify-btn";
+      var inputs = document
+        .getElementById(containerId)
+        .querySelectorAll(".otp-input");
+      var otp = "";
+      inputs.forEach(function (inp) {
+        otp += inp.value;
+      });
+
+      if (otp.length !== 6) {
+        showMessage("Please enter the full 6-digit code.", "error");
+        return;
+      }
+
+      setLoading(btnId, true);
+
+      fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: currentPhone,
+          otp: otp,
+          purpose: purpose,
+        }),
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (data) {
+          setLoading(btnId, false);
+          if (data.success) {
+            showMessage(data.message, "success");
+            // Redirect after short delay
+            setTimeout(function () {
+              window.location.href = "/";
+            }, 1000);
+          } else {
+            showMessage(data.message, "error");
+          }
+        })
+        .catch(function () {
+          setLoading(btnId, false);
+          showMessage("Network error. Please try again.", "error");
+        });
+    };
+
+    // ── RESEND OTP ──
+    window.resendOTP = function (purpose) {
+      fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: currentPhone, purpose: purpose }),
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (data) {
+          showMessage(data.message, "success");
+          if (data.dev_otp) showDevOTP(data.dev_otp);
+        })
+        .catch(function () {
+          showMessage("Failed to resend. Try again.", "error");
+        });
+    };
+
+    // ── OTP INPUT BEHAVIOR ──
+    // Auto-advance, paste support, backspace
+    document.querySelectorAll(".otp-input").forEach(function (input) {
+      input.addEventListener("input", function (e) {
+        var val = e.target.value;
+        if (val && val.length === 1) {
+          var next = e.target.nextElementSibling;
+          if (next && next.classList.contains("otp-input")) next.focus();
+        }
+      });
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Backspace" && !e.target.value) {
+          var prev = e.target.previousElementSibling;
+          if (prev && prev.classList.contains("otp-input")) {
+            prev.focus();
+            prev.value = "";
+          }
+        }
+      });
+
+      // Paste full OTP
+      input.addEventListener("paste", function (e) {
+        e.preventDefault();
+        var paste = (e.clipboardData || window.clipboardData)
+          .getData("text")
+          .trim();
+        if (paste.length === 6 && !isNaN(paste)) {
+          var container = e.target.closest('[id$="-otp-inputs"]');
+          var inputs = container.querySelectorAll(".otp-input");
+          for (var i = 0; i < 6; i++) {
+            inputs[i].value = paste[i];
+          }
+          inputs[5].focus();
+        }
+      });
+    });
+
+    // Allow Enter key to submit
+    document
+      .getElementById("signin-phone")
+      .addEventListener("keydown", function (e) {
+        if (e.key === "Enter") handleSignIn();
+      });
+
+    // ── HELPERS ──
+    function focusFirstOTP(containerId) {
+      var first = document
+        .getElementById(containerId)
+        .querySelector(".otp-input");
+      if (first)
+        setTimeout(function () {
+          first.focus();
+        }, 100);
+    }
+
+    function showMessage(text, type) {
+      var el = document.getElementById("auth-message");
+      el.textContent = text;
+      el.className =
+        "mt-4 text-center text-sm " +
+        (type === "error" ? "text-red-600" : "text-green-600");
+      el.classList.remove("hidden");
+    }
+
+    function hideMessage() {
+      document.getElementById("auth-message").classList.add("hidden");
+    }
+
+    function showDevOTP(otp) {
+      document.getElementById("dev-otp-code").textContent = otp;
+      document.getElementById("dev-otp").classList.remove("hidden");
+    }
+
+    function setLoading(btnId, loading) {
+      var btn = document.getElementById(btnId);
+      if (loading) {
+        btn.disabled = true;
+        btn.dataset.origText = btn.textContent;
+        btn.textContent = "Please wait...";
+        btn.classList.add("opacity-70", "cursor-not-allowed");
+      } else {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.origText || btn.textContent;
+        btn.classList.remove("opacity-70", "cursor-not-allowed");
+      }
+    }
+  })();
+</script>
+{% endblock %}

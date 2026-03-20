@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}My Cart - Parshva Jewellers{% endblock %}
+{% block content %}
+<section class="py-16 px-4 min-h-[80vh]">
+    <div class="container mx-auto max-w-4xl">
+        <h1 class="text-4xl brand-font text-center mb-2 dark:text-white">Shopping Cart</h1>
+        <p class="text-center text-gray-500 dark:text-gray-400 mb-10">
+            {% if items %}{{ items|length }} item{{ 's' if items|length != 1 }}{% else %}Your cart is empty{% endif %}
+        </p>
+
+        {% if items %}
+        <div class="space-y-4" id="cart-list">
+            {% for item in items %}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 flex overflow-hidden" id="cart-{{ item.id }}">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-gray-100 dark:bg-gray-700">
+                    <img src="{{ url_for('static', filename=item.product_image) }}" alt="{{ item.product_name }}"
+                         class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 p-4 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 dark:text-white brand-font text-lg">{{ item.product_name }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 capitalize">{{ item.product_category }}</p>
+                        {% if item.price > 0 %}
+                        <p class="text-yellow-700 dark:text-yellow-500 font-bold mt-1">₹{{ "{:,.0f}".format(item.price) }}</p>
+                        {% else %}
+                        <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Price on request</p>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQty({{ item.id }}, {{ item.quantity - 1 }})"
+                                    class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold transition">−</button>
+                            <span class="w-8 text-center font-semibold text-gray-800 dark:text-white" id="qty-{{ item.id }}">{{ item.quantity }}</span>
+                            <button onclick="updateQty({{ item.id }}, {{ item.quantity + 1 }})"
+                                    class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold transition">+</button>
+                        </div>
+                        {% if item.subtotal > 0 %}
+                        <p class="font-bold text-gray-800 dark:text-white">₹{{ "{:,.0f}".format(item.subtotal) }}</p>
+                        {% endif %}
+                        <button onclick="removeCart({{ item.id }})"
+                                class="text-red-500 hover:text-red-700 text-sm font-semibold transition">Remove</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Order Summary -->
+        <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-bold dark:text-white mb-4">Order Summary</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Subtotal ({{ items|length }} item{{ 's' if items|length != 1 }})</span>
+                    <span>{% if total > 0 %}₹{{ "{:,.0f}".format(total) }}{% else %}Price on request{% endif %}</span>
+                </div>
+                <div class="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Shipping</span>
+                    <span class="text-green-600">Free</span>
+                </div>
+                <hr class="dark:border-gray-700">
+                <div class="flex justify-between text-lg font-bold dark:text-white pt-2">
+                    <span>Total</span>
+                    <span class="text-yellow-700 dark:text-yellow-500">{% if total > 0 %}₹{{ "{:,.0f}".format(total) }}{% else %}Price on request{% endif %}</span>
+                </div>
+            </div>
+            <button class="w-full mt-6 bg-yellow-700 hover:bg-yellow-800 text-white py-3 rounded-lg font-semibold transition text-lg">
+                Proceed to Checkout
+            </button>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('home') }}" class="text-yellow-700 hover:text-yellow-800 font-semibold">← Continue Shopping</a>
+        </div>
+
+        {% else %}
+        <div class="text-center py-20">
+            <svg class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            <p class="text-gray-400 dark:text-gray-500 text-lg mb-4">Your cart is empty</p>
+            <a href="{{ url_for('home') }}" class="inline-block bg-yellow-700 hover:bg-yellow-800 text-white px-8 py-3 rounded-lg font-semibold transition">Start Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+function updateQty(id, newQty) {
+    if (newQty <= 0) { removeCart(id); return; }
+    fetch('/api/cart/update', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id, quantity: newQty})
+    }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) location.reload(); // Reload to recalculate totals
+    });
+}
+
+function removeCart(id) {
+    fetch('/api/cart/remove', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id})
+    }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) location.reload();
+    });
+}
+</script>
+{% endblock %}

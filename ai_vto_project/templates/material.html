@@ -1,0 +1,251 @@
+{% extends "base.html" %} {% block title %}{{ title }} - Parshva Jewellers{%
+endblock %} {% block content %}
+
+<!-- Hero Banner -->
+<section class="relative bg-gray-900 py-20 overflow-hidden">
+  <div
+    class="absolute inset-0 {% if material == 'gold' %}bg-gradient-to-r from-yellow-800/40 to-gray-900/80 {% elif material == 'silver' %}bg-gradient-to-r from-gray-500/30 to-gray-900/80 {% elif material == 'diamond' %}bg-gradient-to-r from-blue-900/30 to-gray-900/80 {% else %}bg-gradient-to-r from-orange-900/30 to-gray-900/80{% endif %}"
+  ></div>
+  <div class="container mx-auto px-6 text-center relative z-10">
+    <nav class="mb-6 text-sm">
+      <a
+        href="{{ url_for('home') }}"
+        class="text-gray-400 hover:text-yellow-500 transition"
+        >Home</a
+      >
+      <span class="text-gray-600 mx-2">›</span>
+      <span class="text-yellow-500">{{ title }}</span>
+    </nav>
+    <h1 class="text-5xl md:text-6xl brand-font text-white mb-3">{{ title }}</h1>
+    <p class="text-gray-400 max-w-xl mx-auto">
+      {% if material == 'gold' %}Pure gold pieces crafted with precision and
+      love {% elif material == 'silver' %}Elegant silver jewellery for everyday
+      grace {% elif material == 'diamond' %}Brilliant diamonds that capture the
+      light {% elif material == 'daily-wear' %}Anti-tarnish pieces for
+      effortless daily elegance {% endif %}
+    </p>
+    <p class="text-gray-500 mt-3 text-sm">
+      {{ products|length }} piece{{ 's' if products|length != 1 }}
+    </p>
+  </div>
+</section>
+
+<section class="py-10 bg-[#fdfbf7] dark:bg-gray-900 min-h-[60vh]">
+  <div class="container mx-auto px-6">
+    {% if products %}
+    <!-- Subcategory Filter Chips -->
+    <div class="flex flex-wrap items-center gap-3 mb-6">
+      <span
+        class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mr-1"
+        >Filter:</span
+      >
+      <button
+        onclick="filterCategory('all')"
+        class="cat-chip px-4 py-2 rounded-full text-sm font-semibold bg-gray-900 dark:bg-yellow-700 text-white transition"
+      >
+        All
+      </button>
+      {% set seen = [] %} {% for p in products %} {% if p.category not in seen
+      %} {% if seen.append(p.category) %}{% endif %}
+      <button
+        onclick="filterCategory('{{ p.category }}')"
+        class="cat-chip px-4 py-2 rounded-full text-sm font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-yellow-50 dark:hover:bg-gray-700 transition capitalize"
+      >
+        {{ p.category }}
+      </button>
+      {% endif %} {% endfor %}
+    </div>
+
+    <!-- Filter Bar -->
+    <div
+      class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="relative">
+        <input
+          type="text"
+          id="filter-search"
+          placeholder="Search within {{ title }}..."
+          class="pl-10 pr-4 py-2.5 w-72 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:border-yellow-600 transition"
+        />
+        <svg
+          class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
+      </div>
+      <div class="flex items-center gap-4">
+        <select
+          id="sort-select"
+          class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm outline-none focus:border-yellow-600 cursor-pointer"
+        >
+          <option value="default">Sort by: Default</option>
+          <option value="name-asc">Name: A → Z</option>
+          <option value="name-desc">Name: Z → A</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+        </select>
+        <span
+          id="visible-count"
+          class="text-sm text-gray-400 dark:text-gray-500"
+        ></span>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div
+      id="product-grid"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7"
+    >
+      {% for p in products %}
+      <div
+        class="product-item group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:-translate-y-1"
+        data-name="{{ p.name|lower }}"
+        data-price="{{ p.price or 0 }}"
+        data-category="{{ p.category }}"
+      >
+        <div class="relative h-80 bg-gray-50 dark:bg-gray-700 overflow-hidden">
+          <img
+            src="{{ url_for('static', filename=p.image_path) }}"
+            alt="{{ p.name }}"
+            class="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+            loading="lazy"
+          />
+          <div
+            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition duration-300 flex items-center justify-center"
+          >
+            <a
+              href="{{ url_for('tryon', category=p.category, filename=p.image_path.split('/')[1]) }}"
+              class="bg-white text-gray-900 px-5 py-2.5 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition duration-300 font-semibold text-xs uppercase tracking-wider shadow-lg hover:bg-yellow-700 hover:text-white"
+            >
+              Virtual Try-On
+            </a>
+          </div>
+          <button
+            onclick="toggleWishlist(this, '{{ p.image_path }}', '{{ p.name }}', '{{ p.category }}')"
+            class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white dark:bg-gray-800 shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition duration-300"
+            title="Wishlist"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              ></path>
+            </svg>
+          </button>
+          <span
+            class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-white/90 dark:bg-gray-800/90 text-gray-600 dark:text-gray-400 backdrop-blur capitalize"
+            >{{ p.category }}</span
+          >
+        </div>
+        <div class="p-5">
+          <h3
+            class="text-base font-semibold text-gray-900 dark:text-white mb-1.5 brand-font leading-tight"
+          >
+            {{ p.name }}
+          </h3>
+          <div class="flex items-baseline justify-between">
+            <p class="text-yellow-700 dark:text-yellow-500 font-bold text-lg">
+              {{ p.display_price }}
+            </p>
+            {% if p.weight %}
+            <p class="text-gray-400 text-xs">{{ p.weight }}</p>
+            {% endif %}
+          </div>
+          <button
+            onclick="addToCart('{{ p.image_path }}', '{{ p.name }}', '{{ p.category }}')"
+            class="w-full mt-4 bg-gray-900 dark:bg-yellow-700 hover:bg-yellow-700 dark:hover:bg-yellow-600 text-white py-2.5 rounded-lg transition font-semibold text-sm uppercase tracking-wider"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-20">
+      <p class="text-gray-500 dark:text-gray-400 text-xl">
+        No {{ material }} items found yet.
+      </p>
+      <a
+        href="{{ url_for('home') }}"
+        class="inline-block mt-4 text-yellow-700 hover:text-yellow-800 font-semibold"
+        >← Browse all collections</a
+      >
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  var currentCat = "all";
+
+  function filterCategory(cat) {
+    currentCat = cat;
+    var chips = document.querySelectorAll(".cat-chip");
+    chips.forEach(function (c) {
+      c.className =
+        c.textContent.trim().toLowerCase() === (cat === "all" ? "all" : cat)
+          ? "cat-chip px-4 py-2 rounded-full text-sm font-semibold bg-gray-900 dark:bg-yellow-700 text-white transition"
+          : "cat-chip px-4 py-2 rounded-full text-sm font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-yellow-50 dark:hover:bg-gray-700 transition capitalize";
+    });
+    applyFilters();
+  }
+
+  function applyFilters() {
+    var q = document.getElementById("filter-search").value.toLowerCase();
+    var items = document.querySelectorAll(".product-item");
+    var visible = 0;
+    items.forEach(function (item) {
+      var matchCat =
+        currentCat === "all" || item.dataset.category === currentCat;
+      var matchSearch = item.dataset.name.indexOf(q) !== -1;
+      item.style.display = matchCat && matchSearch ? "" : "none";
+      if (matchCat && matchSearch) visible++;
+    });
+    document.getElementById("visible-count").textContent =
+      visible + " of {{ products|length }}";
+  }
+
+  document
+    .getElementById("filter-search")
+    .addEventListener("input", applyFilters);
+
+  document
+    .getElementById("sort-select")
+    .addEventListener("change", function () {
+      var grid = document.getElementById("product-grid");
+      var items = Array.from(grid.querySelectorAll(".product-item"));
+      var val = this.value;
+      items.sort(function (a, b) {
+        if (val === "name-asc")
+          return a.dataset.name.localeCompare(b.dataset.name);
+        if (val === "name-desc")
+          return b.dataset.name.localeCompare(a.dataset.name);
+        if (val === "price-asc")
+          return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+        if (val === "price-desc")
+          return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+        return 0;
+      });
+      items.forEach(function (item) {
+        grid.appendChild(item);
+      });
+    });
+</script>
+{% endblock %}

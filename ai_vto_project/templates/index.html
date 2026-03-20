@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Parshva Jewellers — Timeless Elegance{% endblock %}
+
+{% block content %}
+
+<!-- Full-screen Hero Carousel with Ken Burns -->
+<section id="hero-section" class="relative h-screen w-full overflow-hidden">
+    <div id="carousel-slides" class="h-full w-full relative">
+        <!-- Slide 1 -->
+        <div class="slide absolute inset-0 transition-opacity duration-[2000ms] opacity-100">
+            <div class="absolute inset-0 bg-cover bg-center ken-burns" style="background-image: url('{{ url_for('static', filename='backgrounds/slide_7.webp') }}');"></div>
+            <div class="absolute inset-0 bg-black/20"></div>
+            <div class="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4 z-10">
+                <h1 class="text-5xl md:text-7xl mb-4 brand-font font-bold">Timeless Elegance</h1>
+                <p class="text-xl md:text-2xl mb-8 font-light tracking-wide">Discover our curated collections</p>
+                <a href="#collections" class="bg-white hover:bg-yellow-600 text-gray-900 hover:text-white px-10 py-3.5 uppercase tracking-widest text-sm transition shadow-lg font-semibold">Explore Collection</a>
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="slide absolute inset-0 transition-opacity duration-[2000ms] opacity-0">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ url_for('static', filename='backgrounds/slide_9.webp') }}');"></div>
+            <div class="absolute inset-0 bg-black/20"></div>
+            <div class="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4 z-10">
+                <h1 class="text-5xl md:text-7xl mb-4 brand-font font-bold">Golden Heritage</h1>
+                <p class="text-xl md:text-2xl mb-8 font-light tracking-wide">Crafted for royalty</p>
+                <a href="{{ url_for('shop.material_page', material_type='gold') }}" class="bg-white hover:bg-yellow-600 text-gray-900 hover:text-white px-10 py-3.5 uppercase tracking-widest text-sm transition shadow-lg font-semibold">Shop Gold</a>
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="slide absolute inset-0 transition-opacity duration-[2000ms] opacity-0">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ url_for('static', filename='backgrounds/slide_10.avif') }}');"></div>
+            <div class="absolute inset-0 bg-black/20"></div>
+            <div class="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4 z-10">
+                <h1 class="text-5xl md:text-7xl mb-4 brand-font font-bold">Wedding Season</h1>
+                <p class="text-xl md:text-2xl mb-8 font-light tracking-wide">Shine on your big day</p>
+                <a href="#wedding" class="bg-white hover:bg-yellow-600 text-gray-900 hover:text-white px-10 py-3.5 uppercase tracking-widest text-sm transition shadow-lg font-semibold">View Collection</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce">
+        <svg class="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+    </div>
+
+    <!-- Arrows -->
+    <button id="prev-slide" class="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur text-white flex items-center justify-center transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+    </button>
+    <button id="next-slide" class="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur text-white flex items-center justify-center transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+    </button>
+</section>
+
+<!-- Spacer for fixed nav on inner pages -->
+<div style="height: 0px;"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- COLLECTIONS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="collections" class="py-24 bg-white dark:bg-gray-900">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16 reveal">
+            <p class="text-xs uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-500 mb-3 font-semibold">Curated For You</p>
+            <h2 class="text-5xl brand-font text-gray-900 dark:text-white mb-5">Our Collections</h2>
+            <div class="w-16 h-[2px] bg-yellow-600 mx-auto"></div>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% set collections = [
+                ('kundan-stories', 'Kundan Stories', 'Intricate stone settings', 'https://blingbag.co.in/cdn/shop/files/EmeraldMansiKundanJewellerySet_1.jpg?v=1753870981&width=1080'),
+                ('rajwadi-heritage', 'Rajwadi Heritage', 'Royal Rajasthani tradition', 'https://ishhaara.com/cdn/shop/files/ishhaara-pink-kundan-rajwadi-pendent-jewellery-set-30509247594539.jpg?v=1710636673&width=1920'),
+                ('polki-collection', 'Polki Collection', 'Uncut diamond beauty', 'https://www.sanvijewels.com/cdn/shop/files/IMG_20240527_194828.jpg?v=1717754516&width=2569'),
+                ('festive-collection', 'Festive Collection', 'Celebration-ready pieces', 'https://ishhaara.com/cdn/shop/files/ishhaara-jadau-kundan-leaf-ear-chain-39720070935637.jpg?v=1767780078&width=533')
+            ] %}
+            {% for slug, label, desc, img in collections %}
+            <a href="{{ url_for('shop.collection_page', collection=slug) }}" class="reveal-scale group relative h-[420px] overflow-hidden rounded-2xl shadow-lg cursor-pointer" style="transition-delay: {{ loop.index0 * 0.1 }}s">
+                <img src="{{ img }}" alt="{{ label }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-[800ms]">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition duration-500"></div>
+                <div class="absolute bottom-8 left-8 right-8 text-white">
+                    <h3 class="text-2xl mb-2 brand-font">{{ label }}</h3>
+                    <p class="text-gray-300 text-sm flex items-center gap-2">{{ desc }} <span class="group-hover:translate-x-1 transition">→</span></p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- WEDDING -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="wedding" class="py-24 bg-[#faf8f5] dark:bg-gray-800">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16 reveal">
+            <p class="text-xs uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-500 mb-3 font-semibold">For Your Special Day</p>
+            <h2 class="text-5xl brand-font text-gray-900 dark:text-white mb-5">Wedding Jewellery</h2>
+            <div class="w-16 h-[2px] bg-yellow-600 mx-auto"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 lg:grid-cols-5 gap-7">
+            {% set wedding_items = [
+                ('wedding-necklaces', 'Wedding Necklaces', 'https://images.unsplash.com/photo-1721807644561-9efcabee5c42?w=500&h=500&fit=crop'),
+                ('wedding-bangles', 'Wedding Bangles', 'https://staticimg.tanishq.co.in/microsite/gold-page/assets/images/collection/51O5B1VOI2AP3.jpg'),
+                ('wedding-earrings', 'Wedding Earrings', 'https://images.unsplash.com/photo-1589095053205-8fc842336f4a?w=500&h=500&fit=crop'),
+                ('wedding-sets', 'Wedding Sets', 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=500&h=500&fit=crop'),
+                ('bridal-mangalsutra', 'Bridal Mangalsutra', 'https://sonchafa.com/cdn/shop/files/CA4E8182-E913-413E-90F5-382E22C540B5.jpg?v=1709899390&width=1946')
+            ] %}
+            {% for slug, label, img in wedding_items %}
+            <a href="{{ url_for('shop.wedding_page', section=slug) }}" class="reveal group text-center" style="transition-delay: {{ loop.index0 * 0.08 }}s">
+                <div class="h-56 rounded-2xl overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-2">
+                    <img src="{{ img }}" alt="{{ label }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <h3 class="mt-5 font-semibold text-gray-800 dark:text-white brand-font text-base">{{ label }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- GIFTING -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="gifting" class="py-24 bg-white dark:bg-gray-900">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16 reveal">
+            <p class="text-xs uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-500 mb-3 font-semibold">Tokens of Love</p>
+            <h2 class="text-5xl brand-font text-gray-900 dark:text-white mb-5">Gifting</h2>
+            <div class="w-16 h-[2px] bg-yellow-600 mx-auto"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {% set gifts = [
+                ('for-her', 'For Her', 'Beautiful gifts for women', 'https://assets.ajio.com/medias/sys_master/root/20240628/rtI6/667ebcd61d763220fa6a472a/-473Wx593H-463282653-white-MODEL.jpg'),
+                ('for-him', 'For Him', 'Elegant pieces for men', 'https://starkle.in/cdn/shop/products/JPEGimage-A221EC61FE5C-1.jpg?v=1641142495&width=1897'),
+                ('for-kids', 'For Kids', 'Adorable little treasures', 'https://i.pinimg.com/236x/64/a1/03/64a1034fbd92590d1e0254d1c2e8c47a.jpg')
+            ] %}
+            {% for slug, label, desc, img in gifts %}
+            <a href="{{ url_for('shop.gifting_page', section=slug) }}" class="reveal-scale group relative h-[450px] overflow-hidden rounded-2xl shadow-lg cursor-pointer" style="transition-delay: {{ loop.index0 * 0.15 }}s">
+                <img src="{{ img }}" alt="{{ label }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-[800ms]">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition duration-500"></div>
+                <div class="absolute bottom-10 left-0 right-0 text-center text-white">
+                    <h3 class="text-3xl mb-2 brand-font">{{ label }}</h3>
+                    <p class="text-gray-300 text-sm">{{ desc }} →</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ABOUT / WHY US -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="about" class="py-24 bg-[#faf8f5] dark:bg-gray-800">
+    <div class="container mx-auto px-6 text-center">
+        <div class="reveal">
+            <p class="text-xs uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-500 mb-3 font-semibold">Why Choose Us</p>
+            <h2 class="text-4xl brand-font text-gray-900 dark:text-white mb-16">The Parshva Promise</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {% set promises = [
+                ('M5 13l4 4L19 7', 'Certified Quality', 'Every piece comes with a certificate of authenticity.'),
+                ('M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'Best Pricing', 'Direct manufacturer pricing for the best value.'),
+                ('M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z', 'Artisan Crafted', 'Handcrafted by skilled artisans preserving tradition.'),
+                ('M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', '24/7 Support', 'Dedicated concierge service for all your needs.')
+            ] %}
+            {% for icon, title, desc in promises %}
+            <div class="reveal p-6" style="transition-delay: {{ loop.index0 * 0.1 }}s">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto bg-yellow-100/80 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ icon }}"></path></svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2 brand-font dark:text-white">{{ title }}</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="bg-gray-900 dark:bg-black py-20">
+    <div class="container mx-auto px-6 text-center text-white reveal">
+        <h2 class="text-4xl brand-font mb-4">Join Our Exclusive Circle</h2>
+        <p class="text-gray-500 mb-10 max-w-lg mx-auto">Be the first to know about new arrivals, limited editions, and special events.</p>
+        <div class="max-w-md mx-auto flex">
+            <input type="email" placeholder="Enter your email" class="flex-1 px-5 py-3.5 bg-gray-800 border border-gray-700 rounded-l focus:outline-none focus:border-yellow-600 text-white placeholder-gray-600">
+            <button class="bg-yellow-700 hover:bg-yellow-600 text-white px-8 py-3.5 font-semibold transition uppercase tracking-wider text-sm rounded-r">Subscribe</button>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var slides = document.querySelectorAll('.slide');
+    var currentSlide = 0;
+    var totalSlides = slides.length;
+    
+    function showSlide(index) {
+        slides.forEach(function(slide, i) {
+            slide.style.opacity = i === index ? '1' : '0';
+            // Add Ken Burns to active slide
+            var inner = slide.querySelector('div');
+            if (i === index) { inner.classList.add('ken-burns'); }
+            else { inner.classList.remove('ken-burns'); }
+        });
+    }
+    function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; showSlide(currentSlide); }
+    function prevSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; showSlide(currentSlide); }
+    
+    var nextBtn = document.getElementById('next-slide');
+    var prevBtn = document.getElementById('prev-slide');
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    setInterval(nextSlide, 7000); // Slower transitions for cinematic feel
+});
+</script>
+
+{% endblock %}
