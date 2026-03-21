@@ -4,14 +4,18 @@ from urllib.parse import quote_plus
 # -------------------------------------------------------------------
 # DATABASE (MySQL)
 # -------------------------------------------------------------------
-MYSQL_HOST = os.environ.get('MYSQL_HOST', '127.0.0.1')
-MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
-MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'Meetparmar@2004')  # ← YOUR PASSWORD
-MYSQL_DATABASE = os.environ.get('MYSQL_DATABASE', 'parshva_jewellers')
+# -------------------------------------------------------------------
+# DATABASE (SQLite for deployment)
+# -------------------------------------------------------------------
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-# URL-encode the password so special characters (@, !, #, etc.) don't break the URL
-SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{quote_plus(MYSQL_PASSWORD)}@{MYSQL_HOST}/{MYSQL_DATABASE}"
+SQLALCHEMY_DATABASE_URI = os.environ.get(
+    "DATABASE_URL",
+    "sqlite:///" + os.path.join(BASE_DIR, "site.db")
+)
+
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 
 # -------------------------------------------------------------------
 # FLASK
