@@ -2,8 +2,9 @@ import os
 from flask import Blueprint, render_template, request, jsonify, current_app
 from flask_login import login_required, current_user
 from functools import wraps
-from models import db, Product
 from werkzeug.utils import secure_filename
+
+from ai_vto_project.models import db, Product
 
 admin_bp = Blueprint('admin', __name__)
 

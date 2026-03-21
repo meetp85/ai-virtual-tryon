@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
 from flask_login import login_user, logout_user, login_required, current_user
 
-from models import db, User, OTPRecord
-import config
+from ai_vto_project.models import db, User, OTPRecord
+from ai_vto_project import config
 
 auth_bp = Blueprint('auth', __name__)
 

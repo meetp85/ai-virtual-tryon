@@ -2,8 +2,8 @@ import os
 from flask import Flask, render_template, url_for, request, jsonify
 from flask_cors import CORS
 from flask_login import LoginManager
-from recommendations import recommender
-from vto_accuracy import VTOAccuracyTracker
+from ai_vto_project.recommendations import recommender
+from ai_vto_project.vto_accuracy import VTOAccuracyTracker
 import cv2
 import numpy as np
 import base64
@@ -13,11 +13,11 @@ import random
 import json
 from datetime import datetime
 
-import config
-from models import db, User, init_db
-from auth import auth_bp
-from shop import shop_bp
-from admin import admin_bp
+from ai_vto_project import config
+from ai_vto_project.models import db, User, init_db
+from ai_vto_project.auth import auth_bp
+from ai_vto_project.shop import shop_bp
+from ai_vto_project.admin import admin_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -491,7 +491,7 @@ def get_recommendations_api(jewelry_id):
     if jewelry_id in jewelry_dataset:
         info = jewelry_dataset[jewelry_id]
         image_path = info['image_path']
-        from models import Product
+        from ai_vto_project.models import Product
         product = Product.query.filter_by(image_path=image_path).first()
         if product:
             recs = recommender.get_recommendations(product.id, max_results=8)
@@ -587,7 +587,7 @@ if __name__ == "__main__":
 
     # Build AI recommendation index
     with app.app_context():
-        from models import Product
+        from ai_vto_project.models import Product
         all_products = Product.query.filter_by(is_active=True).all()
         recommender.build_index(all_products, app.static_folder)
 

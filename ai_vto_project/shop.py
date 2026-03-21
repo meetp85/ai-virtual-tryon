@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
-from models import db, Wishlist, Cart, Product
+
+from ai_vto_project.models import db, Wishlist, Cart, Product
 
 shop_bp = Blueprint('shop', __name__)
 
