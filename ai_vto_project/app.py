@@ -583,6 +583,8 @@ def vto_accuracy_save():
 # 8. RUN
 # -------------------------------------------------------------------
 if __name__ == "__main__":
+    import os
+
     load_jewelry_dataset()
 
     # Build AI recommendation index
@@ -591,4 +593,5 @@ if __name__ == "__main__":
         all_products = Product.query.filter_by(is_active=True).all()
         recommender.build_index(all_products, app.static_folder)
 
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
